@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<object
+    name="portal_controlpanel"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    >
+
+    <configlet
+        title="Researcher settings"
+        action_id="msd.researcherbase.researchersettings"
+        appId="msd.researcherbase"
+        category="Products"
+        condition_expr=""
+        url_expr="string:${portal_url}/@@researchersettings"
+        icon_expr="string:"
+        visible="True"
+        i18n:attributes="title">
+            <permission>Manage portal</permission>
+    </configlet>
+
+</object>

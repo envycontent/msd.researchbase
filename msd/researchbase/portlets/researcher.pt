@@ -1,0 +1,54 @@
+<dl class="portlet portletResearcher" i18n:domain="msd.researchbase"
+    tal:condition="view/available">
+
+    <dt class="portletHeader">
+      <span class="portletTopLeft"></span>
+      <span i18n:translate="label_researcher_info">Researcher info</span>
+      <span class="portletTopRight"></span>
+    </dt>
+    
+    <dd class="portletItem odd"
+        tal:define="programmes view/programmes;
+            areas view/areas">
+
+        <tal:programmes condition="programmes">
+            <h3 i18n:translate="label_programmes">Programmes</h3>
+            <tal:block repeat="item programmes/values">
+                <h4>
+                    <a href="" tal:attributes="href item/url;title item/description"
+                        tal:content="item/title"/>
+                </h4>
+                <ul tal:condition="item/programmes">
+                    <tal:block repeat="prog item/programmes">
+                        <li>
+                            <a href="" tal:attributes="href prog/url;title item/description"
+                                tal:content="prog/title"/>
+                        </li>
+                    </tal:block>
+                </ul>
+            </tal:block>
+        </tal:programmes>
+
+        <tal:areas condition="areas">
+            <h3 i18n:translate="label_research_areas">Research Areas</h3>
+            <ul>
+                <tal:block repeat="item areas">
+                    <li>
+                        <a href="" tal:attributes="href item/url"
+                            tal:content="item/title"/>
+                    </li>
+                </tal:block>
+            </ul>
+        </tal:areas>        
+    </dd>
+
+    <dd class="portletFooter"
+        tal:define="bottom_url view/bottom_url"
+        tal:condition="bottom_url">
+        <a href="" tal:attributes="href bottom_url">
+            <tal:block i18n:translate="label_researcher_portlet_footer">
+                Find out how to apply to work with</tal:block>
+            <tal:name content="context/title">Paul Azzopardi</tal:name>&nbsp;&raquo;
+        </a>
+    </dd>
+</dl>

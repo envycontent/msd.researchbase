@@ -1,0 +1,336 @@
+from zope.interface import implements, Interface
+
+from Products.Five import BrowserView
+from Products.CMFCore.utils import getToolByName
+
+from msd.researchertemplates import researchertemplatesMessageFactory as _
+
+# actually, I just want to create a view that can be called from a skin template
+
+# from five import grok
+
+# grok.templatedir("templates")
+#
+#
+
+# CATEGORIZATION
+# 
+# msd researcher has keywords arising from the categorization schema
+# ora researcher has keywords arising from the categorization schema AND potentially other keywords and categories already stored on it in ora
+
+
+class IKeywordsDisplay(Interface):
+    """Categorization and Keywords
+       We have to work out which fields in the categorization schema are actually being used
+       So, for each field in the categorization schema:
+    """
+    def displayKeywords():
+        """
+        returns true if the display is set to true AND there is some content
+        """        
+    def getKeywordsLabel():
+        """
+        returns a label as a string for the relevant keyword field
+        """   
+    def getKeywordsList():
+        """
+        returns a list of keywords for the relevant keyword field
+        """
+
+class IORAKeywordsDisplay(Interface):
+    """
+       Display of keywords originating from ORA
+       We probably want to stick with the Divisional Themes only for the time being
+
+    "res_worksOn":["http://www.medsci.ox.ac.uk/research/themes/cancer-and-haematology",
+    "http://www.medsci.ox.ac.uk/research/themes/cell-and-molecular-biology",
+    "http://www.medsci.ox.ac.uk/research/themes/transcription-biology"]
+    """
+    
+    def getDivisionalResearchThemes():
+        """
+        return a list of strings - mapped from the URLs provided by the ORA json
+        for the moment, I've just extracted the theme name from the URL string
+        but we could do a look-up from defaultlists.py
+        - I think Mikko is going to provide a helper method for this in researchbase 
+        """
+        
+
+class IResearcherSummaryView(Interface):
+    """
+    methods for core information about a researcher's work and biography
+    """
+# methods for funding
+# this is slightly tricky in that I suspect ora provides a ready parsed string -
+# which makes assumptions about presentation etc
+
+# however, I've got a bit of a problem in that I can't find an example
+
+# msd.researcher is a list of dicts:
+# ["fundingbody", "url", "startYear", "endYear"]
+
+# collaboration and academic background follow the same pattern, so if I can't
+# get hold of the information I should be able to patch this together later
+# by looking at how we handle collaboration and academic background
+
+    def hasFunding():
+        """
+        returns true if there is information about funding
+        for ORA this should be false
+        """
+
+    def fundingSources():
+        """
+        return funding sources as a list of dicts
+        [{fundingbody:(string),url:(valid url),startYear:(string),endYear:(string)}]
+        At the moment ORA doesn't provide fundingSources
+        """
+# methods for biography
+#
+    def hasBiography():
+        """
+        returns true if biography is not empty 
+        ... there might be that odd thing of a rogue empty <p> tag?
+        """
+
+    def getBiography():
+        """
+        return html text
+        in ORA: res_biography
+        """
+
+# ACADEMIC BACKGROUND
+        
+# this is slightly tricky in that ora provides a ready parsed string -
+# which makes assumptions about presentation etc
+# i.e.: ox_holdsAward":["Ph.D., 1998. Awarded by: The Institute for Cancer Studies, University of Birmingham",
+# "B.Sc., 1994. Awarded by: Manchester University"]
+#
+
+    def getAcademicBackground():
+        """
+        will provide a list of dicts as per msd.researcher
+        [{award:(string), institution:(string), startYear:(string), endYear:(string)}]
+        BUT ORA will only populate the 'award' key value pair in each dict with the more extensive 
+        string from ox_holdsAward
+        as per collaborations (see below), is there a way we can avoid the templating being
+        tripped up by this?
+
+        """
+    def getImage():
+# ?? do we also need a tag method for images?
+
+
+# I haven't worked out how to do images yet... for example:
+# <a href="#"
+#   tal:define="here_url context/@@plone_context_state/object_url;"
+#   tal:attributes="href string:$here_url/image/image_view_fullscreen">
+#  <img tal:replace="structure python: view.tag(scale='mini', css_class='photo')" src="" alt="" />
+#</a>
+        """
+        in ORA - foaf_depiction: returns an image url
+        in msd.researcher - the image is an image field
+        """
+
+    def getImageCaption():
+        """
+        return string
+        in ORA - not sure there is an equivalent, but we could supply foaf_name instead
+        """
+
+    def getSummary():
+        """
+        return html text
+        """
+
+
+
+class IResearcherView(Interface):
+        
+    # methods for core information about a researcher
+    #
+    def getFullame():
+        """
+        return fame name as string
+        in ORA - foaf_name
+        """
+
+    def getLetters_after_name():
+        """
+        return post-nominals string
+        in ORA - res_postNominals
+        """
+
+    def getJobtitle():
+        """
+        return comma-separated string of job-titles
+        in ORA res_statusString (which is just a string anyway)
+        """
+        
+    # methods for person_description
+
+    def getGroup_name():
+        """
+        returns the name of the PI's group if they have one
+        in ORA - no equivalent?
+        """
+
+    def Description():
+        """
+        returns the short description of the researcher's work
+        in ORA - dc_description
+        """
+   
+        
+class IResearcherContact(Interface):
+
+    # methods for person_contact
+    
+    def getUnits():
+        """
+        returns a list of units
+        - in ORA - foaf_member_pair
+        """
+    
+    def getUnitsWithURLs():
+        """
+        returns a list of units with URLs (dicts?)
+        - we will need to look up the URL from defaultlists.py
+        - I think Mikko is going to provide a helper method for this in researchbase 
+        """
+    # methods to provide ready formatted lists of units (save templating work)
+        
+    def getUnitsFormatted():
+        """
+        returns a string of each unit separated by a comma
+        """ 
+        
+    def getUnitsLinked():
+        """
+        returns a string of each unit tagged with <a>, separated by a comma
+        """ 
+    #   methods to return the college, we only expect one, if at all
+        
+    def getCollege():
+        """
+        returns the name of the PI's college as a string
+        in ORA - at this stage it looks as if college isn't included in the json output
+        """
+        
+    def getCollegeWithURL():
+        """
+        returns the name of the PI's college and a URL
+        - the URL will probably need to be looked up in defaultlists.py
+        - I think Mikko is going to provide a helper method for this in researchbase 
+        
+        """
+    
+    def hasCollege():
+        """
+        returns true if there is a valid college
+        false if the college entry is blank or 'none'
+        """
+    
+    def getUrl():
+        """
+        returns personal webpage
+        in ORA - foaf_homepage
+        (we expect valid url)
+        """
+    
+    def getEmail():
+        """
+        returns email
+        in ORA - foaf_mbox
+        (we expect valid email)
+        """
+    
+    def getPhone():
+        """
+        returns phone
+        in ORA - con_phone
+        (string, no validation required)
+        """
+    
+    def getFax():
+        """
+        returns fax
+        in ORA - con_fax
+        (string, no validation required)
+        """
+    
+    def getContact_address():
+        """
+        returns contact address, as a string, each line separated by a comma
+        in ORA - con_address
+        """
+
+        
+# it doesn't look as if ORA has the PA name or details
+    
+    def getPa_name():
+        """
+        returns name of PA
+        in ORA?
+        (string)
+        """
+    
+    def getPa_fax():
+        """
+        returns PA fax
+        in ORA?
+        (string)
+        """
+    
+    def getPa_email():
+        """
+        returns PA email
+        in ORA?
+        (valid email address)
+        """
+    
+class IResearcherCollaborations(Interface):
+
+
+# There's a bit of an anomaly here
+# in ora: ox_collaboratesWith":["Liset Pengel","Nish Talawila","Liang Liu",]
+# so basically you don't get much. However
+# msd researcher gives you slightly more:
+# ["fullName", "url", "email", "role", "institution", "type"]
+    
+    def listCollaborations():
+        """
+        return a list of dicts?
+        [{fullname:(string),role:(string),url:(valid url),institution:(string),type:(string)},]
+        NOTE: we don't include email in this as we want to keep this behind the scenes as much as possible
+        the idea is to use it as an identifier
+        ORA will only have the fullname in each dict.
+        Is there a clever way to ensure that the templates aren't tripped up by this?
+        """
+    
+    def groupMembers():
+        """
+        listCollaborations but filtered for type == Group Member
+        not relevant for ORA which should return an empty list
+        """
+    
+    def pastGroupMembers():
+        """
+        listCollaborations but filtered for type == Past Group Member
+        not relevant for ORA which should return an empty list
+        """
+    
+    def collaborators():
+        """
+        listCollaborations but filtered for type == Collaborator
+        not relevant for ORA which should return an empty list
+        """
+
+class IRelatedResearchers():
+        """
+        We need to be able to list researchers on any item they've been related to, and include:
+        name, title, letters after name, description, job titles
+        they should be listed in alphabetical order
+        """
+
+    

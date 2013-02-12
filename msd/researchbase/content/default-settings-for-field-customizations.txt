@@ -1,0 +1,6 @@
+ ({'fieldName':'keywords1','visible': True, 'label':'MSD Themes', 'description':'Themes and Platform Technologies defined by the Medical Sciences Division', 'vocabToUse':'MSD Themes' },
+  {'fieldName':'keywords2','visible': True, 'label':'Unit Categories', 'description':'Categories of research defined by the Unit', 'vocabToUse':'Vocab Box 2' },
+{'fieldName':'keywords3','visible': False, 'label':'Keywords', 'description':'Keywords', 'vocabToUse':'Vocab Box 3' },
+{'fieldName':'keywords4','visible': False, 'label':'Keywords', 'description':'Keywords', 'vocabToUse':'Vocab Box 4' },
+{'fieldName':'keywords5','visible': False, 'label':'Keywords', 'description':'Keywords', 'vocabToUse':'Vocab Box 5' },
+           ),

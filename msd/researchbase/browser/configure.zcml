@@ -1,0 +1,52 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="msd.researchbase">
+
+  <include package="plone.app.contentmenu" />
+
+  <!-- -*- extra stuff goes here -*- -->
+
+  <browser:page
+      for="*"
+      name="msd_widget_condition"
+      class=".condition.WidgetCondition"
+      permission="zope.Public"
+      />
+      
+  <browser:page
+    for="*"
+    name="oxpoints_view"
+    class=".oxpointsview.oxpointsView"
+    template="oxpointsview.pt"
+    allowed_interface=".oxpointsview.IoxpointsView"
+    permission="zope.Public"
+  />
+  
+  <!-- replace the normal folder view with a researcher specific view -->
+  
+  <interface interface="msd.researchbase.interfaces.IResearcherFolderView" />
+  
+  <class class="Products.ATContentTypes.interface.folder.IATFolder">
+         <allow interface="msd.researchbase.interfaces.researchinterfaces.IResearcherFolderView" />
+  </class>
+  
+  <browser:page
+      for="msd.researchbase.interfaces.researchinterfaces.IResearcherFolderView"
+      name="folder_listing"
+      template="templates/standard_researcher_folder_view.pt"
+      permission="zope2.View"
+      />
+      
+  <browser:menuItem
+      for="msd.researchbase.interfaces.researchinterfaces.IResearcherFolderView"
+      menu="plone_displayviews"
+      title="Researcher Folder Listing"
+      action="@@folder_listing"
+      description="Researcher Folder Listing"
+      />
+  
+
+
+
+</configure>

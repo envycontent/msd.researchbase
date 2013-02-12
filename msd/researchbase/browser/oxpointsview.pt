@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      i18n:domain="msd.oxpoints">
+<body>
+	
+        <tal:main
+         tal:define="testviewresults view/listColleges;
+                    testunitresults view/listUnits"
+                                    >
+        [ <tal:block repeat="testview testviewresults">
+            ["<span tal:omit-tag="" tal:content="testview/uri" />",            
+            "<span tal:omit-tag="" tal:content="testview/Title" />",
+            "<span tal:omit-tag="" tal:content="testview/homepage" />"], <br />
+          </tal:block>]
+          <br />
+          <br /> 
+          [ <tal:block repeat="testview testunitresults">
+              ["<span tal:omit-tag="" tal:content="testview/uri" />",            
+              "<span tal:omit-tag="" tal:content="testview/Title" />",
+              "<span tal:omit-tag="" tal:content="testview/homepage" />"], <br />
+            </tal:block>]
+
+        </tal:main>
+</body>
+</html>
