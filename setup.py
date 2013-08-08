@@ -56,7 +56,6 @@ setup(name='msd.researchbase',
       zip_safe=False,
       install_requires=['setuptools',
                         'simplejson',
-                        'five.grok'
                         ],
       tests_require=tests_require,
       extras_require=dict(tests=tests_require),

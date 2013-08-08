@@ -23,6 +23,14 @@
     permission="zope.Public"
   />
   
+  <browser:page
+      name="researchersettings"
+      for="Products.CMFCore.interfaces.ISiteRoot"
+      class=".setting.ResearcherSettings"
+      permission="zope2.View"
+      />
+  
+  
   <!-- replace the normal folder view with a researcher specific view -->
   
   <interface interface="msd.researchbase.interfaces.IResearcherFolderView" />

@@ -3,17 +3,15 @@
 
 """
 
-from Products.CMFCore.interfaces import ISiteRoot
+from Products.Five import BrowserView
 
-from five import grok
 
-class ResearcherSettings(grok.CodeView):
+class ResearcherSettings(BrowserView):
     """ 
     Access researcher setting through Plone Control Panel.
     
     Simply create settings objects (if not exist) and redirect to it.
     """
-    grok.context(ISiteRoot)
     
     def render(self):
         from msd.researchbase.utilities import getResearcherSettings
@@ -23,5 +21,9 @@ class ResearcherSettings(grok.CodeView):
         self.request.response.redirect(obj.absolute_url() + "/edit")
         
         return ""
+        
+    def __call__(self):
+        self.render() 
+        
         
     
